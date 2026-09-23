@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 export default function JobsList({ jobs }) {
   if (jobs.length === 0) {
     return (
@@ -13,7 +11,10 @@ export default function JobsList({ jobs }) {
   return (
     <div className="grid gap-4">
       {jobs.map((job) => (
-        <div key={job.id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition border-l-4 border-blue-500">
+        <div
+          key={job.id}
+          className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition border-l-4 border-blue-500"
+        >
           <div className="flex justify-between items-start mb-3">
             <div>
               <h3 className="text-xl font-bold text-gray-900">{job.title}</h3>
