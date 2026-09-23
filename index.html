@@ -16,14 +16,14 @@
 <header class="header">
   <div class="container header-inner">
     <h1 class="logo">Search<span>MyWork</span></h1>
-    
+
     <nav class="nav">
       <button class="nav-btn active" data-page="jobs" data-i18n="nav_jobs">Вакансии</button>
       <button class="nav-btn" data-page="profiles" data-i18n="nav_profiles">Специалисты</button>
       <button class="nav-btn" data-page="create-profile" data-i18n="nav_profile">Анкета</button>
       <button class="nav-btn" data-page="chat" data-i18n="nav_chat">Чат</button>
     </nav>
-    
+
     <div class="controls">
       <select id="lang-select" class="lang-select">
         <option value="ru">RU</option>
@@ -36,26 +36,26 @@
 
 <main class="main container">
 
-  <!-- Страница поиска вакансий -->
+  <!-- Вакансии -->
   <section id="page-jobs" class="page active">
     <div class="search-bar">
       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input type="text" id="jobs-search" class="search-input" data-i18n-placeholder="search_jobs_placeholder">
+      <input type="text" id="jobs-search" class="search-input" placeholder="Поиск:">
     </div>
     <div id="jobs-list" class="cards-grid"></div>
   </section>
 
-  <!-- Список профилей специалистов -->
+  <!-- Специалисты -->
   <section id="page-profiles" class="page">
     <div class="search-bar">
       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input type="text" id="profiles-search" class="search-input" data-i18n-placeholder="search_profiles_placeholder">
+      <input type="text" id="profiles-search" class="search-input" placeholder="Поиск:">
     </div>
     <div id="profiles-list" class="cards-grid"></div>
   </section>
@@ -66,35 +66,48 @@
       <h2 data-i18n="profile_form_title">Заполните анкету</h2>
       <p class="form-subtitle" data-i18n="profile_form_subtitle">Чтобы компания или специалист знали, кто вы. Анкета не публикуется в разделе «Специалисты» — она нужна только для чата.</p>
 
-      <div class="account-type-switch">
-        <button type="button" class="type-btn active" data-type="specialist" data-i18n="type_specialist">Я специалист</button>
-        <button type="button" class="type-btn" data-type="company" data-i18n="type_company">Я компания</button>
+      <!-- Режим просмотра -->
+      <div id="profile-view" class="profile-view hidden">
+        <div class="pv-row">
+          <span class="pv-label" data-i18n="pv_role">Тип аккаунта</span>
+          <span class="pv-value" id="pv-role"></span>
+        </div>
+        <div id="profile-view-fields"></div>
+        <button type="button" class="btn-primary" id="profile-edit-btn" data-i18n="edit_profile">Изменить анкету</button>
       </div>
 
-      <form id="profile-form">
-        <label><span data-i18n="f_name">Имя и фамилия *</span><input type="text" name="name" required></label>
-        <label><span data-i18n="f_city">Город *</span><input type="text" name="city" required></label>
-        <label><span data-i18n="f_email">Email *</span><input type="email" name="email" required></label>
-        <label><span data-i18n="f_phone">Телефон</span><input type="tel" name="phone"></label>
-
-        <div class="type-fields" data-type-fields="specialist">
-          <label><span data-i18n="f_position">Желаемая должность *</span><input type="text" name="desired_position"></label>
-          <label><span data-i18n="f_exp">Опыт работы (лет)</span><input type="number" name="experience_years" min="0"></label>
-          <label><span data-i18n="f_salary">Ожидаемая зарплата</span><input type="number" name="expected_salary" placeholder="80000"></label>
-          <label><span data-i18n="f_skills">Навыки (через запятую) *</span><input type="text" name="skills" placeholder="JavaScript, React, Node.js"></label>
-          <label><span data-i18n="f_about">О себе *</span><textarea name="about" rows="5"></textarea></label>
-          <label><span data-i18n="f_portfolio">Portfolio / LinkedIn / GitHub</span><input type="url" name="portfolio_url"></label>
+      <!-- Режим редактирования -->
+      <div id="profile-edit" class="profile-edit">
+        <div class="account-type-switch">
+          <button type="button" class="type-btn active" data-type="specialist" data-i18n="type_specialist">Я специалист</button>
+          <button type="button" class="type-btn" data-type="company" data-i18n="type_company">Я компания</button>
         </div>
 
-        <div class="type-fields hidden" data-type-fields="company">
-          <label><span data-i18n="f_company_name">Название компании *</span><input type="text" name="company_name"></label>
-          <label><span data-i18n="f_industry">Сфера деятельности *</span><input type="text" name="industry" placeholder="IT, Финансы, Ритейл..."></label>
-          <label><span data-i18n="f_website">Сайт компании</span><input type="url" name="website"></label>
-          <label><span data-i18n="f_company_about">О компании *</span><textarea name="company_about" rows="5"></textarea></label>
-        </div>
+        <form id="profile-form">
+          <label><span data-i18n="f_name">Имя и фамилия *</span><input type="text" name="name" required></label>
+          <label><span data-i18n="f_city">Город *</span><input type="text" name="city" required></label>
+          <label><span data-i18n="f_email">Email *</span><input type="email" name="email" required></label>
+          <label><span data-i18n="f_phone">Телефон</span><input type="tel" name="phone"></label>
 
-        <button type="submit" class="btn-primary" data-i18n="save_profile">Сохранить анкету</button>
-      </form>
+          <div class="type-fields" data-type-fields="specialist">
+            <label><span data-i18n="f_position">Желаемая должность *</span><input type="text" name="desired_position"></label>
+            <label><span data-i18n="f_exp">Опыт работы (лет)</span><input type="number" name="experience_years" min="0"></label>
+            <label><span data-i18n="f_salary">Ожидаемая зарплата</span><input type="number" name="expected_salary" placeholder="80000"></label>
+            <label><span data-i18n="f_skills">Навыки (через запятую) *</span><input type="text" name="skills" placeholder="JavaScript, React, Node.js"></label>
+            <label><span data-i18n="f_about">О себе *</span><textarea name="about" rows="5"></textarea></label>
+            <label><span data-i18n="f_portfolio">Portfolio / LinkedIn / GitHub</span><input type="url" name="portfolio_url"></label>
+          </div>
+
+          <div class="type-fields hidden" data-type-fields="company">
+            <label><span data-i18n="f_company_name">Название компании *</span><input type="text" name="company_name"></label>
+            <label><span data-i18n="f_industry">Сфера деятельности *</span><input type="text" name="industry" placeholder="IT, Финансы, Ритейл..."></label>
+            <label><span data-i18n="f_website">Сайт компании</span><input type="url" name="website"></label>
+            <label><span data-i18n="f_company_about">О компании *</span><textarea name="company_about" rows="5"></textarea></label>
+          </div>
+
+          <button type="submit" class="btn-primary" data-i18n="save_profile">Сохранить анкету</button>
+        </form>
+      </div>
     </div>
   </section>
 
