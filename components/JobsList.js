@@ -1,9 +1,17 @@
+'use client'
+
+import { useApp } from '@/lib/context'
+import { MapPin, Clock, Building2, Briefcase } from 'lucide-react'
+
 export default function JobsList({ jobs }) {
+  const { t } = useApp()
+
   if (jobs.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg">
-        <p className="text-gray-500 text-lg">😅 Вакансий не найдено</p>
-        <p className="text-gray-400 text-sm mt-2">Попробуй изменить фильтры или вернись позже</p>
+      <div className="card p-12 text-center">
+        <Briefcase size={48} className="mx-auto mb-4" style={{ color: 'var(--muted)' }} />
+        <p className="text-lg font-semibold mb-1">{t('no_jobs')}</p>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>{t('no_jobs_hint')}</p>
       </div>
     )
   }
@@ -11,40 +19,66 @@ export default function JobsList({ jobs }) {
   return (
     <div className="grid gap-4">
       {jobs.map((job) => (
-        <div
+        <article
           key={job.id}
-          className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition border-l-4 border-blue-500"
+          className="card p-6 hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
         >
-          <div className="flex justify-between items-start mb-3">
+          <div className="flex justify-between items-start gap-4 mb-3">
             <div>
-              <h3 className="text-xl font-bold text-gray-900">{job.title}</h3>
-              <p className="text-gray-600">🏢 {job.company_id}</p>
+              <h3 className="text-xl font-bold mb-1">{job.title}</h3>
+              <div className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--muted)' }}>
+                <Building2 size={14} />
+                {job.company_id}
+              </div>
             </div>
-            <span className="text-2xl font-bold text-green-600">
-              {job.salary_from} ₽
-            </span>
+            <div className="text-right">
+              <div className="text-2xl font-extrabold gradient-text whitespace-nowrap">
+                {job.salary_from?.toLocaleString('ru')} ₽
+              </div>
+              {job.salary_to && (
+                <div className="text-xs" style={{ color: 'var(--muted)' }}>
+                  до {job.salary_to.toLocaleString('ru')} ₽
+                </div>
+              )}
+            </div>
           </div>
 
-          <p className="text-gray-700 mb-4">{job.description}</p>
+          <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--muted)' }}>
+            {job.description}
+          </p>
 
           <div className="flex flex-wrap gap-2 mb-4">
-            {job.skills && job.skills.split(',').slice(0, 3).map((skill, i) => (
-              <span key={i} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+            {job.skills?.split(',').slice(0, 4).map((skill, i) => (
+              <span
+                key={i}
+                className="text-xs px-3 py-1 rounded-full font-medium"
+                style={{ background: 'rgba(79,70,229,0.1)', color: '#4F46E5' }}
+              >
                 {skill.trim()}
               </span>
             ))}
           </div>
 
-          <div className="flex justify-between items-center text-sm text-gray-500">
+          <div
+            className="flex flex-wrap justify-between items-center gap-3 text-xs pt-4 border-t"
+            style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}
+          >
             <div className="flex gap-4">
-              <span>📍 {job.location}</span>
-              <span>⏱️ {job.experience_years} лет опыта</span>
+              <span className="flex items-center gap-1.5">
+                <MapPin size={14} /> {job.location}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Clock size={14} /> {job.experience_years} {t('years')}
+              </span>
             </div>
-            <span className="text-xs bg-gray-100 px-3 py-1 rounded">
-              {job.employment_type}
+            <span
+              className="px-3 py-1 rounded-full font-medium"
+              style={{ background: 'var(--bg)' }}
+            >
+              {t(job.employment_type?.replace('-', '_')) || job.employment_type}
             </span>
           </div>
-        </div>
+        </article>
       ))}
     </div>
   )
