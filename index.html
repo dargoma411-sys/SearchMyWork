@@ -38,40 +38,24 @@
 
   <!-- Страница поиска вакансий -->
   <section id="page-jobs" class="page active">
-    <div class="filters-bar">
-      <input type="text" id="search-input" class="filter-input" data-i18n-placeholder="search_placeholder">
-      <select id="category-filter" class="filter-select">
-        <option value="" data-i18n="all_categories">Все категории</option>
-        <option value="it" data-i18n="cat_it">IT / Разработка</option>
-        <option value="design" data-i18n="cat_design">Дизайн</option>
-        <option value="marketing" data-i18n="cat_marketing">Маркетинг</option>
-        <option value="sales" data-i18n="cat_sales">Продажи</option>
-        <option value="finance" data-i18n="cat_finance">Финансы</option>
-      </select>
-      <input type="text" id="location-filter" class="filter-input" data-i18n-placeholder="location">
-      <select id="employment-type" class="filter-select">
-        <option value="" data-i18n="employment_type">Тип занятости</option>
-        <option value="fulltime" data-i18n="emp_fulltime">Полная занятость</option>
-        <option value="parttime" data-i18n="emp_parttime">Частичная</option>
-        <option value="remote" data-i18n="emp_remote">Удалённо</option>
-        <option value="contract" data-i18n="emp_contract">Контракт</option>
-      </select>
-      <input type="number" id="salary-min" class="filter-input small" data-i18n-placeholder="salary_from">
-      <select id="sort-by" class="filter-select">
-        <option value="newest" data-i18n="newest">Сначала новые</option>
-        <option value="salary-desc" data-i18n="salary_desc">Зарплата ↓</option>
-        <option value="salary-asc" data-i18n="salary_asc">Зарплата ↑</option>
-      </select>
+    <div class="search-bar">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="jobs-search" class="search-input" data-i18n-placeholder="search_jobs_placeholder">
     </div>
-    
     <div id="jobs-list" class="cards-grid"></div>
   </section>
 
   <!-- Список профилей специалистов -->
   <section id="page-profiles" class="page">
-    <div class="profiles-header">
-      <h2 data-i18n="specialists_title">Специалисты</h2>
-      <input type="text" id="profile-search" class="filter-input wide" data-i18n-placeholder="profile_search">
+    <div class="search-bar">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="profiles-search" class="search-input" data-i18n-placeholder="search_profiles_placeholder">
     </div>
     <div id="profiles-list" class="cards-grid"></div>
   </section>
@@ -80,7 +64,7 @@
   <section id="page-create-profile" class="page">
     <div class="form-card">
       <h2 data-i18n="profile_form_title">Заполните анкету</h2>
-      <p class="form-subtitle" data-i18n="profile_form_subtitle">Чтобы компания или специалист знали, кто вы.</p>
+      <p class="form-subtitle" data-i18n="profile_form_subtitle">Чтобы компания или специалист знали, кто вы. Анкета не публикуется в разделе «Специалисты» — она нужна только для чата.</p>
 
       <div class="account-type-switch">
         <button type="button" class="type-btn active" data-type="specialist" data-i18n="type_specialist">Я специалист</button>
@@ -88,13 +72,11 @@
       </div>
 
       <form id="profile-form">
-        <!-- Общие поля -->
         <label><span data-i18n="f_name">Имя и фамилия *</span><input type="text" name="name" required></label>
         <label><span data-i18n="f_city">Город *</span><input type="text" name="city" required></label>
         <label><span data-i18n="f_email">Email *</span><input type="email" name="email" required></label>
         <label><span data-i18n="f_phone">Телефон</span><input type="tel" name="phone"></label>
 
-        <!-- Поля специалиста -->
         <div class="type-fields" data-type-fields="specialist">
           <label><span data-i18n="f_position">Желаемая должность *</span><input type="text" name="desired_position"></label>
           <label><span data-i18n="f_exp">Опыт работы (лет)</span><input type="number" name="experience_years" min="0"></label>
@@ -104,7 +86,6 @@
           <label><span data-i18n="f_portfolio">Portfolio / LinkedIn / GitHub</span><input type="url" name="portfolio_url"></label>
         </div>
 
-        <!-- Поля компании -->
         <div class="type-fields hidden" data-type-fields="company">
           <label><span data-i18n="f_company_name">Название компании *</span><input type="text" name="company_name"></label>
           <label><span data-i18n="f_industry">Сфера деятельности *</span><input type="text" name="industry" placeholder="IT, Финансы, Ритейл..."></label>
@@ -123,10 +104,8 @@
       <aside class="chat-sidebar">
         <div class="chat-sidebar-head">
           <h3 data-i18n="chat_dialogs">Диалоги</h3>
-          <button id="chat-new-btn" class="chat-new-btn" title="Новый чат">+</button>
         </div>
         <div id="chat-dialog-list"></div>
-        <div id="chat-new-list" class="chat-new-list hidden"></div>
       </aside>
       <div class="chat-main">
         <div id="chat-header" class="chat-header" data-i18n="chat_choose">Выберите диалог</div>
