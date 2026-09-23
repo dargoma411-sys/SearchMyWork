@@ -3,10 +3,12 @@ let currentPage = 'jobs';
 let currentLang = localStorage.getItem('language') || 'ru';
 let jobsCache = [];
 let profilesCache = [];
-let activeChatJobId = null;
+let activeDialogId = null; // "job:1" | "profile:2"
 let currentUser = JSON.parse(localStorage.getItem('smw_user') || 'null');
+let showNewChatList = false;
+let accountType = 'specialist';
 
-// ============ HARDCODED JOBS (публикует только владелец) ============
+// ============ HARDCODED JOBS ============
 const HARDCODED_JOBS = [
   {
     id: 1,
@@ -20,14 +22,14 @@ const HARDCODED_JOBS = [
     description: 'Разработка интерфейсов для крупной SaaS-платформы. Работа в команде из 8 инженеров, современный стек, код-ревью, CI/CD.',
     requirements: '3+ года опыта с React, уверенное знание TypeScript, Redux/Zustand, опыт работы с REST и GraphQL.',
     benefits: 'Удалённая работа, гибкий график, ДМС, компенсация обучения, техника от компании.',
-    contact_email: 'Work@Morvexx.ru',
-    contact_phone: '+7 999 999 99 99',
+    contact_email: 'hr@morvexx-digital.ru',
+    contact_phone: '+7 495 120 34 56',
     created_at: new Date(Date.now() - 2 * 86400000).toISOString()
   },
   {
     id: 2,
     title: 'UI/UX дизайнер',
-    company: 'Morvexx Digital',
+    company: 'Nebula Studio',
     category: 'design',
     location: 'Санкт-Петербург',
     employment_type: 'fulltime',
@@ -36,14 +38,14 @@ const HARDCODED_JOBS = [
     description: 'Проектирование интерфейсов мобильных и веб-приложений. Работа в тесной связке с продукт-менеджером и разработчиками.',
     requirements: 'Портфолио с кейсами, опыт в Figma, понимание принципов юзабилити и дизайн-систем.',
     benefits: 'Офис в центре, ДМС, оплата конференций, современное оборудование.',
-    contact_email: 'Work@Morvexx.ru',
-    contact_phone: '+7 999 999 99 99',
+    contact_email: 'jobs@nebula-studio.ru',
+    contact_phone: '+7 812 445 78 90',
     created_at: new Date(Date.now() - 4 * 86400000).toISOString()
   },
   {
     id: 3,
     title: 'Backend-разработчик (Node.js)',
-    company: 'Morvexx Digital',
+    company: 'DataForge',
     category: 'it',
     location: 'Удалённо',
     employment_type: 'remote',
@@ -52,14 +54,14 @@ const HARDCODED_JOBS = [
     description: 'Разработка микросервисов для платёжной системы. Высокая нагрузка, интересные задачи, сильная команда.',
     requirements: 'Опыт с Node.js от 4 лет, PostgreSQL, Redis, Docker, понимание принципов построения микросервисов.',
     benefits: 'Полностью удалённо, оплачиваемый отпуск, бонусы по итогам года.',
-    contact_email: 'Work@Morvexx.ru',
-    contact_phone: '+7 999 999 99 99',
+    contact_email: 'dev@dataforge.io',
+    contact_phone: '+7 903 770 12 45',
     created_at: new Date(Date.now() - 6 * 86400000).toISOString()
   },
   {
     id: 4,
     title: 'Интернет-маркетолог',
-    company: 'Morvexx Digital',
+    company: 'AdRocket',
     category: 'marketing',
     location: 'Москва',
     employment_type: 'fulltime',
@@ -68,14 +70,14 @@ const HARDCODED_JOBS = [
     description: 'Ведение кампаний в Яндекс.Директ и Google Ads, аналитика, работа с воронкой, A/B-тесты.',
     requirements: 'Опыт от 2 лет, знание метрик, уверенная работа с аналитикой, портфолио кампаний.',
     benefits: 'Офис рядом с метро, ДМС, обучение за счёт компании.',
-    contact_email: 'Work@Morvexx.ru',
-    contact_phone: '+7 999 999 99 99',
+    contact_email: 'hr@adrocket.ru',
+    contact_phone: '+7 495 330 88 21',
     created_at: new Date(Date.now() - 8 * 86400000).toISOString()
   },
   {
     id: 5,
     title: 'Менеджер по продажам B2B',
-    company: 'Morvexx Digital',
+    company: 'TradeLine Group',
     category: 'sales',
     location: 'Екатеринбург',
     employment_type: 'fulltime',
@@ -84,14 +86,14 @@ const HARDCODED_JOBS = [
     description: 'Работа с корпоративными клиентами, полный цикл сделки, развитие базы, участие в тендерах.',
     requirements: 'Опыт в B2B-продажах от 1 года, грамотная речь, умение вести переговоры.',
     benefits: 'Оклад + процент, обучение, карьерный рост, корпоративная связь.',
-    contact_email: 'Work@Morvexx.ru',
-    contact_phone: '+7 999 999 99 99',
+    contact_email: 'sales@tradeline.ru',
+    contact_phone: '+7 343 220 55 14',
     created_at: new Date(Date.now() - 10 * 86400000).toISOString()
   },
   {
     id: 6,
     title: 'Финансовый аналитик',
-    company: 'Morvexx Digital',
+    company: 'CapitalMind',
     category: 'finance',
     location: 'Москва',
     employment_type: 'fulltime',
@@ -100,8 +102,8 @@ const HARDCODED_JOBS = [
     description: 'Финансовое моделирование, бюджетирование, подготовка отчётности для руководства.',
     requirements: 'Высшее экономическое, Excel на продвинутом уровне, опыт работы с BI-инструментами.',
     benefits: 'ДМС, годовые бонусы, гибридный формат работы.',
-    contact_email: 'Work@Morvexx.ru',
-    contact_phone: '+7 999 999 99 99',
+    contact_email: 'fin@capitalmind.ru',
+    contact_phone: '+7 495 901 23 67',
     created_at: new Date(Date.now() - 12 * 86400000).toISOString()
   }
 ];
@@ -119,7 +121,7 @@ const HARDCODED_PROFILES = [
     about: 'Разрабатываю сложные веб-приложения более 6 лет. Люблю чистый код, менторство и оптимизацию производительности.',
     portfolio_url: 'https://github.com/alexivanov',
     email: 'alex.ivanov@example.com',
-    phone: '+7 900 111 22 33',
+    phone: '+7 901 234 56 78',
     created_at: new Date(Date.now() - 3 * 86400000).toISOString()
   },
   {
@@ -133,7 +135,7 @@ const HARDCODED_PROFILES = [
     about: 'Создаю интерфейсы, которые любят пользователи. Работала над 20+ проектами в финтехе и e-commerce.',
     portfolio_url: 'https://behance.net/mariapetrova',
     email: 'maria.p@example.com',
-    phone: '+7 900 222 33 44',
+    phone: '+7 902 345 67 89',
     created_at: new Date(Date.now() - 5 * 86400000).toISOString()
   },
   {
@@ -147,7 +149,7 @@ const HARDCODED_PROFILES = [
     about: 'Проектирую высоконагруженные системы. Опыт миграции монолита в микросервисы.',
     portfolio_url: 'https://github.com/dsokolov',
     email: 'd.sokolov@example.com',
-    phone: '+7 900 333 44 55',
+    phone: '+7 903 456 78 90',
     created_at: new Date(Date.now() - 7 * 86400000).toISOString()
   },
   {
@@ -161,7 +163,7 @@ const HARDCODED_PROFILES = [
     about: 'Запустила 3 продукта с нуля до миллиона пользователей. Умею работать с данными и командами.',
     portfolio_url: '',
     email: 'e.novikova@example.com',
-    phone: '+7 900 444 55 66',
+    phone: '+7 904 567 89 01',
     created_at: new Date(Date.now() - 9 * 86400000).toISOString()
   },
   {
@@ -175,7 +177,7 @@ const HARDCODED_PROFILES = [
     about: 'Автоматизирую всё, что можно автоматизировать. Строю надёжную инфраструктуру для команд разработки.',
     portfolio_url: 'https://github.com/akuznetsov',
     email: 'a.kuznetsov@example.com',
-    phone: '+7 900 555 66 77',
+    phone: '+7 905 678 90 12',
     created_at: new Date(Date.now() - 11 * 86400000).toISOString()
   },
   {
@@ -189,7 +191,7 @@ const HARDCODED_PROFILES = [
     about: 'Превращаю данные в решения. Опыт в продуктовой и маркетинговой аналитике.',
     portfolio_url: '',
     email: 'o.morozova@example.com',
-    phone: '+7 900 666 77 88',
+    phone: '+7 906 789 01 23',
     created_at: new Date(Date.now() - 13 * 86400000).toISOString()
   }
 ];
@@ -197,32 +199,178 @@ const HARDCODED_PROFILES = [
 // ============ TRANSLATIONS ============
 const translations = {
   ru: {
+    nav_jobs: 'Вакансии',
+    nav_profiles: 'Специалисты',
+    nav_profile: 'Анкета',
+    nav_chat: 'Чат',
     search_placeholder: 'Поиск по названию...',
     all_categories: 'Все категории',
+    cat_it: 'IT / Разработка',
+    cat_design: 'Дизайн',
+    cat_marketing: 'Маркетинг',
+    cat_sales: 'Продажи',
+    cat_finance: 'Финансы',
     location: 'Локация',
     employment_type: 'Тип занятости',
+    emp_fulltime: 'Полная занятость',
+    emp_parttime: 'Частичная',
+    emp_remote: 'Удалённо',
+    emp_contract: 'Контракт',
     salary_from: 'Зарплата от',
     newest: 'Сначала новые',
     salary_desc: 'Зарплата ↓',
     salary_asc: 'Зарплата ↑',
     no_jobs: 'Вакансии не найдены',
     no_profiles: 'Профили не найдены',
-    create_profile: 'Сохранить анкету',
-    back_to_list: '← Назад к списку'
+    specialists_title: 'Специалисты',
+    profile_search: 'Поиск по имени или навыкам...',
+    profile_form_title: 'Заполните анкету',
+    profile_form_subtitle: 'Чтобы компания или специалист знали, кто вы. Анкета не публикуется в разделе «Специалисты» — она нужна только для чата.',
+    type_specialist: 'Я специалист',
+    type_company: 'Я компания',
+    f_name: 'Имя и фамилия *',
+    f_city: 'Город *',
+    f_email: 'Email *',
+    f_phone: 'Телефон',
+    f_position: 'Желаемая должность *',
+    f_exp: 'Опыт работы (лет)',
+    f_salary: 'Ожидаемая зарплата',
+    f_skills: 'Навыки (через запятую) *',
+    f_about: 'О себе *',
+    f_portfolio: 'Portfolio / LinkedIn / GitHub',
+    f_company_name: 'Название компании *',
+    f_industry: 'Сфера деятельности *',
+    f_website: 'Сайт компании',
+    f_company_about: 'О компании *',
+    save_profile: 'Сохранить анкету',
+    chat_dialogs: 'Диалоги',
+    chat_choose: 'Выберите диалог',
+    chat_placeholder: 'Написать сообщение...',
+    send: 'Отправить',
+    back_to_list: '← Назад к списку',
+    back_to_specialists: '← Назад к специалистам',
+    footer_tag: 'Биржа вакансий и специалистов',
+    footer_contacts: 'Контакты',
+    footer_docs: 'Документы',
+    footer_privacy: 'Политика конфиденциальности',
+    footer_terms: 'Пользовательское соглашение',
+    footer_rights: 'Все права защищены.',
+    chat_need_profile: 'Сначала заполните анкету',
+    chat_need_profile_text: 'Чтобы писать в чат, сначала заполните <b>Анкету</b> во вкладке выше.',
+    chat_empty: 'Сообщений пока нет. Напишите первым!',
+    chat_select: 'Выберите диалог или создайте новый',
+    chat_no_dialogs: 'Пока нет диалогов. Нажмите «+», чтобы начать.',
+    chat_new_title: 'Новый чат',
+    chat_jobs: 'Вакансии',
+    chat_specialists: 'Специалисты',
+    chat_you_are: 'Вы вошли как',
+    alert_profile_saved: 'Анкета сохранена! Теперь вам доступен чат.',
+    alert_need_profile: 'Чтобы написать в чат, сначала заполните Анкету.',
+    years_short: 'лет опыта',
+    detail_salary: 'Заработная плата',
+    detail_employment: 'Тип занятости',
+    detail_description: 'Описание',
+    detail_requirements: 'Требования',
+    detail_benefits: 'Условия работы',
+    detail_contacts: 'Контакты для связи',
+    detail_write_chat: 'Написать в чат',
+    detail_published: 'Опубликовано',
+    detail_exp: 'Опыт работы',
+    detail_expected: 'Ожидаемая зарплата',
+    detail_skills: 'Навыки',
+    detail_about: 'О себе',
+    detail_portfolio: 'Портфолио',
+    detail_contacts_short: 'Контакты',
+    detail_created: 'Профиль создан',
+    not_specified: 'Не указано',
+    discussed: 'Обсуждается'
   },
   en: {
+    nav_jobs: 'Jobs',
+    nav_profiles: 'Specialists',
+    nav_profile: 'Profile',
+    nav_chat: 'Chat',
     search_placeholder: 'Search by title...',
     all_categories: 'All categories',
+    cat_it: 'IT / Development',
+    cat_design: 'Design',
+    cat_marketing: 'Marketing',
+    cat_sales: 'Sales',
+    cat_finance: 'Finance',
     location: 'Location',
     employment_type: 'Employment type',
+    emp_fulltime: 'Full-time',
+    emp_parttime: 'Part-time',
+    emp_remote: 'Remote',
+    emp_contract: 'Contract',
     salary_from: 'Salary from',
     newest: 'Newest first',
     salary_desc: 'Salary ↓',
     salary_asc: 'Salary ↑',
     no_jobs: 'No jobs found',
     no_profiles: 'No profiles found',
-    create_profile: 'Save profile',
-    back_to_list: '← Back to list'
+    specialists_title: 'Specialists',
+    profile_search: 'Search by name or skills...',
+    profile_form_title: 'Fill out the form',
+    profile_form_subtitle: 'So a company or specialist knows who you are. The form is not published in the Specialists section — it is only used for chat.',
+    type_specialist: 'I am a specialist',
+    type_company: 'I am a company',
+    f_name: 'Full name *',
+    f_city: 'City *',
+    f_email: 'Email *',
+    f_phone: 'Phone',
+    f_position: 'Desired position *',
+    f_exp: 'Years of experience',
+    f_salary: 'Expected salary',
+    f_skills: 'Skills (comma separated) *',
+    f_about: 'About me *',
+    f_portfolio: 'Portfolio / LinkedIn / GitHub',
+    f_company_name: 'Company name *',
+    f_industry: 'Industry *',
+    f_website: 'Company website',
+    f_company_about: 'About the company *',
+    save_profile: 'Save profile',
+    chat_dialogs: 'Dialogs',
+    chat_choose: 'Select a dialog',
+    chat_placeholder: 'Write a message...',
+    send: 'Send',
+    back_to_list: '← Back to list',
+    back_to_specialists: '← Back to specialists',
+    footer_tag: 'Job and specialist marketplace',
+    footer_contacts: 'Contacts',
+    footer_docs: 'Documents',
+    footer_privacy: 'Privacy Policy',
+    footer_terms: 'Terms of Service',
+    footer_rights: 'All rights reserved.',
+    chat_need_profile: 'Fill out the form first',
+    chat_need_profile_text: 'To write in chat, first fill out the <b>Profile</b> form above.',
+    chat_empty: 'No messages yet. Write first!',
+    chat_select: 'Select a dialog or create a new one',
+    chat_no_dialogs: 'No dialogs yet. Press "+" to start.',
+    chat_new_title: 'New chat',
+    chat_jobs: 'Jobs',
+    chat_specialists: 'Specialists',
+    chat_you_are: 'Logged in as',
+    alert_profile_saved: 'Profile saved! Chat is now available.',
+    alert_need_profile: 'To write in chat, first fill out the Profile form.',
+    years_short: 'years of experience',
+    detail_salary: 'Salary',
+    detail_employment: 'Employment type',
+    detail_description: 'Description',
+    detail_requirements: 'Requirements',
+    detail_benefits: 'Benefits',
+    detail_contacts: 'Contact information',
+    detail_write_chat: 'Write in chat',
+    detail_published: 'Published',
+    detail_exp: 'Experience',
+    detail_expected: 'Expected salary',
+    detail_skills: 'Skills',
+    detail_about: 'About',
+    detail_portfolio: 'Portfolio',
+    detail_contacts_short: 'Contacts',
+    detail_created: 'Profile created',
+    not_specified: 'Not specified',
+    discussed: 'Negotiable'
   }
 };
 
@@ -234,10 +382,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   loadJobs();
   loadProfiles();
-  renderChatJobList();
+  renderChatDialogList();
   restoreUser();
+  switchAccountType('specialist');
+
   const yearEl = document.getElementById('footer-year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  const langSelect = document.getElementById('lang-select');
+  if (langSelect) langSelect.value = currentLang;
 });
 
 // ============ THEME ============
@@ -259,25 +412,23 @@ function renderThemeIcon() {
   `;
 }
 
-// ============ TRANSLATIONS APPLY ============
+// ============ TRANSLATIONS ============
 function applyTranslations() {
   const t = translations[currentLang];
-  const searchInput = document.querySelector('#search-input');
-  if (searchInput) searchInput.placeholder = t.search_placeholder;
-  const locInput = document.querySelector('#location-filter');
-  if (locInput) locInput.placeholder = t.location;
-  const salInput = document.querySelector('#salary-min');
-  if (salInput) salInput.placeholder = t.salary_from;
-  const catSelect = document.querySelector('#category-filter');
-  if (catSelect && catSelect.options[0]) catSelect.options[0].textContent = t.all_categories;
-  const empSelect = document.querySelector('#employment-type');
-  if (empSelect && empSelect.options[0]) empSelect.options[0].textContent = t.employment_type;
-  const sortSelect = document.querySelector('#sort-by');
-  if (sortSelect) {
-    sortSelect.options[0].textContent = t.newest;
-    sortSelect.options[1].textContent = t.salary_desc;
-    sortSelect.options[2].textContent = t.salary_asc;
-  }
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) el.textContent = t[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (t[key]) el.placeholder = t[key];
+  });
+
+  // Обновляем подсказку в чате и заголовок, если нужно
+  if (currentPage === 'chat') updateChatUI();
+  renderChatDialogList();
 }
 
 // ============ EVENT LISTENERS ============
@@ -305,6 +456,8 @@ function setupEventListeners() {
       applyTranslations();
       renderJobs(jobsCache);
       renderProfiles(profilesCache);
+      renderChatDialogList();
+      if (activeDialogId) updateChatUI();
     });
   }
 
@@ -318,6 +471,11 @@ function setupEventListeners() {
 
   const profileForm = document.getElementById('profile-form');
   if (profileForm) profileForm.addEventListener('submit', handleProfileSubmit);
+
+  // Переключатель типа аккаунта
+  document.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchAccountType(btn.dataset.type));
+  });
 
   const backJobs = document.getElementById('back-to-jobs');
   if (backJobs) backJobs.addEventListener('click', () => navigateTo('jobs'));
@@ -334,8 +492,44 @@ function setupEventListeners() {
       if (e.key === 'Enter') sendChatMessage();
     });
   }
+
+  const chatNewBtn = document.getElementById('chat-new-btn');
+  if (chatNewBtn) {
+    chatNewBtn.addEventListener('click', () => {
+      showNewChatList = !showNewChatList;
+      renderChatNewList();
+    });
+  }
 }
 
+// ============ ACCOUNT TYPE ============
+function switchAccountType(type) {
+  accountType = type;
+  document.querySelectorAll('.type-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.type === type);
+  });
+  document.querySelectorAll('.type-fields').forEach(el => {
+    el.classList.toggle('hidden', el.dataset.typeFields !== type);
+  });
+
+  // Обновляем required у полей
+  const specFields = document.querySelector('[data-type-fields="specialist"]');
+  const compFields = document.querySelector('[data-type-fields="company"]');
+
+  const setRequired = (container, required) => {
+    container.querySelectorAll('input, textarea').forEach(el => el.required = required);
+  };
+
+  if (type === 'specialist') {
+    setRequired(specFields, true);
+    setRequired(compFields, false);
+  } else {
+    setRequired(specFields, false);
+    setRequired(compFields, true);
+  }
+}
+
+// ============ NAVIGATION ============
 function navigateTo(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -348,7 +542,10 @@ function navigateTo(pageId) {
 
   currentPage = pageId;
 
-  if (pageId === 'chat') updateChatUI();
+  if (pageId === 'chat') {
+    renderChatDialogList();
+    updateChatUI();
+  }
 }
 
 // ============ DATA LOADING ============
@@ -358,8 +555,8 @@ function loadJobs() {
 }
 
 function loadProfiles() {
-  const saved = JSON.parse(localStorage.getItem('smw_profiles') || '[]');
-  profilesCache = [...saved, ...HARDCODED_PROFILES];
+  // Анкета пользователя НЕ публикуется в специалистах
+  profilesCache = [...HARDCODED_PROFILES];
   renderProfiles(profilesCache);
 }
 
@@ -385,7 +582,7 @@ function renderJobs(jobs) {
       <p class="card-description">${escapeHtml(job.description)}</p>
       <div class="card-footer">
         <span>${formatDate(job.created_at)}</span>
-        <span>Подробнее →</span>
+        <span>→</span>
       </div>
     </div>
   `).join('');
@@ -412,8 +609,8 @@ function renderProfiles(profiles) {
       </div>
       <p class="card-description">${escapeHtml(profile.about)}</p>
       <div class="card-footer">
-        <span>${profile.experience_years ? `${profile.experience_years} лет опыта` : ''}</span>
-        <span>Профиль →</span>
+        <span>${profile.experience_years ? `${profile.experience_years} ${translations[currentLang].years_short}` : ''}</span>
+        <span>→</span>
       </div>
     </div>
   `).join('');
@@ -480,34 +677,42 @@ function filterProfiles() {
   renderProfiles(filtered);
 }
 
-// ============ PROFILE FORM (анкета) ============
+// ============ PROFILE FORM ============
 function handleProfileSubmit(e) {
   e.preventDefault();
+
   const formData = new FormData(e.target);
-  const profileData = Object.fromEntries(formData.entries());
+  const data = Object.fromEntries(formData.entries());
 
-  profileData.expected_salary = profileData.expected_salary ? parseInt(profileData.expected_salary) : null;
-  profileData.experience_years = profileData.experience_years ? parseInt(profileData.experience_years) : null;
+  // Преобразуем числа
+  if (data.experience_years) data.experience_years = parseInt(data.experience_years);
+  if (data.expected_salary) data.expected_salary = parseInt(data.expected_salary);
 
-  const saved = JSON.parse(localStorage.getItem('smw_profiles') || '[]');
-  profileData.id = Date.now();
-  profileData.created_at = new Date().toISOString();
-  saved.unshift(profileData);
-  localStorage.setItem('smw_profiles', JSON.stringify(saved));
-
-  // Сохраняем текущего пользователя для чата
   currentUser = {
-    name: profileData.name,
-    email: profileData.email,
-    position: profileData.desired_position
+    type: accountType,
+    name: data.name,
+    email: data.email,
+    city: data.city,
+    phone: data.phone || '',
+    // Специалист
+    position: data.desired_position || '',
+    experience: data.experience_years || null,
+    expected_salary: data.expected_salary || null,
+    skills: data.skills || '',
+    about: data.about || '',
+    portfolio: data.portfolio_url || '',
+    // Компания
+    company_name: data.company_name || '',
+    industry: data.industry || '',
+    website: data.website || '',
+    company_about: data.company_about || ''
   };
-  localStorage.setItem('smw_user', JSON.stringify(currentUser));
 
-  alert(currentLang === 'ru' ? 'Анкета сохранена! Теперь вам доступен чат.' : 'Profile saved! Chat is now available.');
+  localStorage.setItem('smw_user', JSON.stringify(currentUser));
+  alert(translations[currentLang].alert_profile_saved);
   e.target.reset();
-  loadProfiles();
   updateChatUI();
-  navigateTo('profiles');
+  navigateTo('chat');
 }
 
 // ============ CHAT ============
@@ -515,33 +720,130 @@ function restoreUser() {
   if (currentUser) updateChatUI();
 }
 
-function getChatMessages(jobId) {
-  const all = JSON.parse(localStorage.getItem('smw_chat') || '{}');
-  return all[jobId] || [];
+function getDialogs() {
+  return JSON.parse(localStorage.getItem('smw_dialogs') || '[]');
 }
 
-function saveChatMessage(jobId, msg) {
+function saveDialogs(dialogs) {
+  localStorage.setItem('smw_dialogs', JSON.stringify(dialogs));
+}
+
+function addDialog(dialogId) {
+  const dialogs = getDialogs();
+  if (!dialogs.includes(dialogId)) {
+    dialogs.push(dialogId);
+    saveDialogs(dialogs);
+  }
+}
+
+function getChatMessages(dialogId) {
   const all = JSON.parse(localStorage.getItem('smw_chat') || '{}');
-  if (!all[jobId]) all[jobId] = [];
-  all[jobId].push(msg);
+  return all[dialogId] || [];
+}
+
+function saveChatMessage(dialogId, msg) {
+  const all = JSON.parse(localStorage.getItem('smw_chat') || '{}');
+  if (!all[dialogId]) all[dialogId] = [];
+  all[dialogId].push(msg);
   localStorage.setItem('smw_chat', JSON.stringify(all));
 }
 
-function renderChatJobList() {
-  const container = document.getElementById('chat-job-list');
+function renderChatDialogList() {
+  const container = document.getElementById('chat-dialog-list');
   if (!container) return;
-  container.innerHTML = jobsCache.map(job => `
-    <div class="chat-job-item" data-job-id="${job.id}" onclick="selectChatJob(${job.id})">
-      ${escapeHtml(job.title)}<br><small style="opacity:0.7">${escapeHtml(job.company)}</small>
-    </div>
-  `).join('');
+
+  const dialogs = getDialogs();
+  if (!dialogs.length) {
+    container.innerHTML = `<p style="font-size:13px;color:var(--muted);padding:8px 4px;">${translations[currentLang].chat_no_dialogs}</p>`;
+    return;
+  }
+
+  container.innerHTML = dialogs.map(dId => {
+    const [type, idStr] = dId.split(':');
+    const id = parseInt(idStr);
+    let title = '', subtitle = '';
+
+    if (type === 'job') {
+      const job = jobsCache.find(j => j.id === id);
+      if (!job) return '';
+      title = job.title;
+      subtitle = job.company;
+    } else {
+      const prof = profilesCache.find(p => p.id === id);
+      if (!prof) return '';
+      title = prof.name;
+      subtitle = prof.desired_position;
+    }
+
+    const active = activeDialogId === dId ? 'active' : '';
+    return `
+      <div class="chat-dialog-item ${active}" onclick="selectDialog('${dId}')">
+        ${escapeHtml(title)}
+        <small>${escapeHtml(subtitle)}</small>
+        <span class="del" onclick="event.stopPropagation(); deleteDialog('${dId}')" title="Удалить">✕</span>
+      </div>
+    `;
+  }).join('');
 }
 
-window.selectChatJob = function(jobId) {
-  activeChatJobId = jobId;
-  document.querySelectorAll('.chat-job-item').forEach(el => {
-    el.classList.toggle('active', parseInt(el.dataset.jobId) === jobId);
-  });
+function renderChatNewList() {
+  const container = document.getElementById('chat-new-list');
+  if (!container) return;
+
+  if (!showNewChatList) {
+    container.classList.add('hidden');
+    container.innerHTML = '';
+    return;
+  }
+
+  container.classList.remove('hidden');
+  container.innerHTML = `
+    <h4>${translations[currentLang].chat_jobs}</h4>
+    ${jobsCache.map(j => `
+      <div class="chat-new-item" onclick="startDialog('job', ${j.id})">
+        ${escapeHtml(j.title)} — ${escapeHtml(j.company)}
+      </div>
+    `).join('')}
+    <h4 style="margin-top:12px;">${translations[currentLang].chat_specialists}</h4>
+    ${profilesCache.map(p => `
+      <div class="chat-new-item" onclick="startDialog('profile', ${p.id})">
+        ${escapeHtml(p.name)} — ${escapeHtml(p.desired_position)}
+      </div>
+    `).join('')}
+  `;
+}
+
+window.selectDialog = function(dialogId) {
+  activeDialogId = dialogId;
+  showNewChatList = false;
+  renderChatDialogList();
+  renderChatNewList();
+  updateChatUI();
+};
+
+window.startDialog = function(type, id) {
+  const dialogId = `${type}:${id}`;
+  addDialog(dialogId);
+  activeDialogId = dialogId;
+  showNewChatList = false;
+  renderChatDialogList();
+  renderChatNewList();
+  updateChatUI();
+};
+
+window.deleteDialog = function(dialogId) {
+  if (!confirm(currentLang === 'ru' ? 'Удалить диалог?' : 'Delete dialog?')) return;
+  let dialogs = getDialogs();
+  dialogs = dialogs.filter(d => d !== dialogId);
+  saveDialogs(dialogs);
+
+  // Удаляем сообщения
+  const all = JSON.parse(localStorage.getItem('smw_chat') || '{}');
+  delete all[dialogId];
+  localStorage.setItem('smw_chat', JSON.stringify(all));
+
+  if (activeDialogId === dialogId) activeDialogId = null;
+  renderChatDialogList();
   updateChatUI();
 };
 
@@ -554,34 +856,47 @@ function updateChatUI() {
 
   if (!header || !messages) return;
 
+  const t = translations[currentLang];
+
   if (!currentUser) {
-    header.textContent = 'Заполните анкету';
-    messages.innerHTML = `<div class="chat-empty">Чтобы писать в чат, сначала заполните <b>Анкету</b> во вкладке выше.</div>`;
+    header.textContent = t.chat_need_profile;
+    messages.innerHTML = `<div class="chat-empty">${t.chat_need_profile_text}</div>`;
     if (input) input.disabled = true;
     if (send) send.disabled = true;
     if (hint) hint.textContent = '';
     return;
   }
 
-  if (!activeChatJobId) {
-    header.textContent = 'Выберите вакансию';
-    messages.innerHTML = `<div class="chat-empty">Выберите вакансию слева, чтобы начать переписку.</div>`;
+  if (!activeDialogId) {
+    header.textContent = t.chat_choose;
+    messages.innerHTML = `<div class="chat-empty">${t.chat_select}</div>`;
     if (input) input.disabled = true;
     if (send) send.disabled = true;
-    if (hint) hint.textContent = `Вы вошли как ${currentUser.name}`;
+    if (hint) hint.textContent = `${t.chat_you_are}: ${currentUser.name}`;
     return;
   }
 
-  const job = jobsCache.find(j => j.id === activeChatJobId);
-  if (job) header.textContent = `${job.title} — ${job.company}`;
-  if (hint) hint.textContent = `Вы вошли как ${currentUser.name} (${currentUser.email})`;
+  const [type, idStr] = activeDialogId.split(':');
+  const id = parseInt(idStr);
+  let title = '';
+
+  if (type === 'job') {
+    const job = jobsCache.find(j => j.id === id);
+    if (job) title = `${job.title} — ${job.company}`;
+  } else {
+    const prof = profilesCache.find(p => p.id === id);
+    if (prof) title = `${prof.name} — ${prof.desired_position}`;
+  }
+
+  header.textContent = title || t.chat_choose;
+  if (hint) hint.textContent = `${t.chat_you_are}: ${currentUser.name} (${currentUser.email})`;
 
   if (input) input.disabled = false;
   if (send) send.disabled = false;
 
-  const msgs = getChatMessages(activeChatJobId);
+  const msgs = getChatMessages(activeDialogId);
   if (!msgs.length) {
-    messages.innerHTML = `<div class="chat-empty">Сообщений пока нет. Напишите первым!</div>`;
+    messages.innerHTML = `<div class="chat-empty">${t.chat_empty}</div>`;
   } else {
     messages.innerHTML = msgs.map(m => `
       <div class="chat-msg ${m.author === currentUser.email ? 'me' : 'other'}">
@@ -595,7 +910,7 @@ function updateChatUI() {
 
 function sendChatMessage() {
   if (!currentUser) return;
-  if (!activeChatJobId) return;
+  if (!activeDialogId) return;
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text) return;
@@ -606,7 +921,7 @@ function sendChatMessage() {
     text: text,
     time: new Date().toISOString()
   };
-  saveChatMessage(activeChatJobId, msg);
+  saveChatMessage(activeDialogId, msg);
   input.value = '';
   updateChatUI();
 }
@@ -615,7 +930,7 @@ function sendChatMessage() {
 window.showJobDetail = function(jobId) {
   const job = jobsCache.find(j => j.id === jobId);
   if (!job) return;
-
+  const t = translations[currentLang];
   const content = document.getElementById('job-detail-content');
   if (!content) return;
 
@@ -625,35 +940,35 @@ window.showJobDetail = function(jobId) {
       <p class="detail-subtitle">${escapeHtml(job.company)} • ${escapeHtml(job.location)}</p>
     </div>
     <div class="detail-section">
-      <h3>Заработная плата</h3>
-      <p>${job.salary_min ? formatSalary(job.salary_min) + (job.salary_max ? ' – ' + formatSalary(job.salary_max) : '') : 'Не указана'}</p>
+      <h3>${t.detail_salary}</h3>
+      <p>${job.salary_min ? formatSalary(job.salary_min) + (job.salary_max ? ' – ' + formatSalary(job.salary_max) : '') : t.not_specified}</p>
     </div>
     <div class="detail-section">
-      <h3>Тип занятости</h3>
+      <h3>${t.detail_employment}</h3>
       <p>${getEmploymentLabel(job.employment_type)}</p>
     </div>
     <div class="detail-section">
-      <h3>Описание</h3>
+      <h3>${t.detail_description}</h3>
       <p>${escapeHtml(job.description)}</p>
     </div>
     ${job.requirements ? `
     <div class="detail-section">
-      <h3>Требования</h3>
+      <h3>${t.detail_requirements}</h3>
       <p>${escapeHtml(job.requirements)}</p>
     </div>` : ''}
     ${job.benefits ? `
     <div class="detail-section">
-      <h3>Условия работы</h3>
+      <h3>${t.detail_benefits}</h3>
       <p>${escapeHtml(job.benefits)}</p>
     </div>` : ''}
     <div class="contact-info">
-      <h3>Контакты для связи</h3>
+      <h3>${t.detail_contacts}</h3>
       <p><strong>Email:</strong> <a href="mailto:${escapeHtml(job.contact_email)}">${escapeHtml(job.contact_email)}</a></p>
-      ${job.contact_phone ? `<p><strong>Телефон:</strong> <a href="tel:${escapeHtml(job.contact_phone)}">${escapeHtml(job.contact_phone)}</a></p>` : ''}
+      ${job.contact_phone ? `<p><strong>${currentLang === 'ru' ? 'Телефон' : 'Phone'}:</strong> <a href="tel:${escapeHtml(job.contact_phone)}">${escapeHtml(job.contact_phone)}</a></p>` : ''}
     </div>
-    <button class="btn-primary" style="margin-top:24px;" onclick="openChatForJob(${job.id})">Написать в чат</button>
+    <button class="btn-primary" style="margin-top:24px;" onclick="openChatForJob(${job.id})">${t.detail_write_chat}</button>
     <p style="margin-top: 24px; font-size: 12px; color: var(--muted);">
-      Опубликовано: ${formatDate(job.created_at)}
+      ${t.detail_published}: ${formatDate(job.created_at)}
     </p>
   `;
 
@@ -663,7 +978,7 @@ window.showJobDetail = function(jobId) {
 window.showProfileDetail = function(profileId) {
   const profile = profilesCache.find(p => p.id === profileId);
   if (!profile) return;
-
+  const t = translations[currentLang];
   const content = document.getElementById('profile-detail-content');
   if (!content) return;
 
@@ -674,15 +989,15 @@ window.showProfileDetail = function(profileId) {
       <p class="detail-subtitle">${escapeHtml(profile.desired_position)} • ${escapeHtml(profile.city)}</p>
     </div>
     <div class="detail-section">
-      <h3>Опыт работы</h3>
-      <p>${profile.experience_years ? `${profile.experience_years} лет` : 'Не указан'}</p>
+      <h3>${t.detail_exp}</h3>
+      <p>${profile.experience_years ? `${profile.experience_years} ${t.years_short}` : t.not_specified}</p>
     </div>
     <div class="detail-section">
-      <h3>Ожидаемая зарплата</h3>
-      <p>${profile.expected_salary ? formatSalary(profile.expected_salary) : 'Обсуждается'}</p>
+      <h3>${t.detail_expected}</h3>
+      <p>${profile.expected_salary ? formatSalary(profile.expected_salary) : t.discussed}</p>
     </div>
     <div class="detail-section">
-      <h3>Навыки</h3>
+      <h3>${t.detail_skills}</h3>
       <div class="skills-tags">
         ${(profile.skills || '').split(',').map(skill => 
           `<span class="skill-tag">${escapeHtml(skill.trim())}</span>`
@@ -690,21 +1005,22 @@ window.showProfileDetail = function(profileId) {
       </div>
     </div>
     <div class="detail-section">
-      <h3>О себе</h3>
+      <h3>${t.detail_about}</h3>
       <p>${escapeHtml(profile.about)}</p>
     </div>
     ${profile.portfolio_url ? `
     <div class="detail-section">
-      <h3>Портфолио</h3>
+      <h3>${t.detail_portfolio}</h3>
       <p><a href="${escapeHtml(profile.portfolio_url)}" target="_blank" rel="noopener">${escapeHtml(profile.portfolio_url)}</a></p>
     </div>` : ''}
     <div class="contact-info">
-      <h3>Контакты</h3>
+      <h3>${t.detail_contacts_short}</h3>
       <p><strong>Email:</strong> <a href="mailto:${escapeHtml(profile.email)}">${escapeHtml(profile.email)}</a></p>
-      ${profile.phone ? `<p><strong>Телефон:</strong> <a href="tel:${escapeHtml(profile.phone)}">${escapeHtml(profile.phone)}</a></p>` : ''}
+      ${profile.phone ? `<p><strong>${currentLang === 'ru' ? 'Телефон' : 'Phone'}:</strong> <a href="tel:${escapeHtml(profile.phone)}">${escapeHtml(profile.phone)}</a></p>` : ''}
     </div>
+    <button class="btn-primary" style="margin-top:24px;" onclick="openChatForProfile(${profile.id})">${t.detail_write_chat}</button>
     <p style="margin-top: 24px; font-size: 12px; color: var(--muted);">
-      Профиль создан: ${formatDate(profile.created_at)}
+      ${t.detail_created}: ${formatDate(profile.created_at)}
     </p>
   `;
 
@@ -713,12 +1029,22 @@ window.showProfileDetail = function(profileId) {
 
 window.openChatForJob = function(jobId) {
   if (!currentUser) {
-    alert('Чтобы написать в чат, сначала заполните Анкету.');
+    alert(translations[currentLang].alert_need_profile);
     navigateTo('create-profile');
     return;
   }
   navigateTo('chat');
-  selectChatJob(jobId);
+  startDialog('job', jobId);
+};
+
+window.openChatForProfile = function(profileId) {
+  if (!currentUser) {
+    alert(translations[currentLang].alert_need_profile);
+    navigateTo('create-profile');
+    return;
+  }
+  navigateTo('chat');
+  startDialog('profile', profileId);
 };
 
 // ============ HELPERS ============
@@ -753,21 +1079,21 @@ function getInitials(name) {
 
 function getCategoryLabel(cat) {
   const labels = {
-    it: 'IT / Разработка',
-    design: 'Дизайн',
-    marketing: 'Маркетинг',
-    sales: 'Продажи',
-    finance: 'Финансы'
+    it: currentLang === 'ru' ? 'IT / Разработка' : 'IT / Development',
+    design: currentLang === 'ru' ? 'Дизайн' : 'Design',
+    marketing: currentLang === 'ru' ? 'Маркетинг' : 'Marketing',
+    sales: currentLang === 'ru' ? 'Продажи' : 'Sales',
+    finance: currentLang === 'ru' ? 'Финансы' : 'Finance'
   };
   return labels[cat] || cat;
 }
 
 function getEmploymentLabel(type) {
   const labels = {
-    fulltime: 'Полная занятость',
-    parttime: 'Частичная',
-    remote: 'Удалённо',
-    contract: 'Контракт'
+    fulltime: currentLang === 'ru' ? 'Полная занятость' : 'Full-time',
+    parttime: currentLang === 'ru' ? 'Частичная' : 'Part-time',
+    remote: currentLang === 'ru' ? 'Удалённо' : 'Remote',
+    contract: currentLang === 'ru' ? 'Контракт' : 'Contract'
   };
   return labels[type] || type;
 }
