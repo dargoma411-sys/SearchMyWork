@@ -1,27 +1,49 @@
+'use client'
+
 import Link from 'next/link'
+import { useApp } from '@/lib/context'
+import { Briefcase, Moon, Sun, Languages, Search } from 'lucide-react'
 
 export default function Header() {
+  const { theme, toggleTheme, lang, toggleLang, t } = useApp()
+
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-blue-600">
-          🔍 SearchMyWork
+    <header
+      className="sticky top-0 z-50 border-b"
+      style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
+    >
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-2 font-extrabold text-xl">
+          <span className="gradient-bg p-2 rounded-xl text-white">
+            <Search size={18} />
+          </span>
+          <span className="gradient-text">SearchMyWork</span>
         </Link>
 
-        <nav className="flex gap-6 items-center">
-          <Link href="/" className="text-gray-700 hover:text-blue-600 transition">
-            🏠 Вакансии
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          <Link href="/" className="hover:opacity-70 transition">
+            {t('nav_jobs')}
           </Link>
-          <Link href="/offers" className="text-gray-700 hover:text-blue-600 transition">
-            💼 Предложения
-          </Link>
-          <Link href="/job-form" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            Разместить вакансию
-          </Link>
-          <Link href="/offer-form" className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            Создать предложение
+          <Link href="/offers" className="hover:opacity-70 transition">
+            {t('nav_offers')}
           </Link>
         </nav>
+
+        <div className="flex items-center gap-2">
+          <button onClick={toggleLang} className="btn btn-ghost !p-2" title="RU / EN">
+            <Languages size={18} />
+            <span className="text-xs font-bold uppercase">{lang}</span>
+          </button>
+
+          <button onClick={toggleTheme} className="btn btn-ghost !p-2" title="Theme">
+            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+
+          <Link href="/job-form" className="btn btn-primary hidden sm:inline-flex">
+            <Briefcase size={16} />
+            {t('nav_post_job')}
+          </Link>
+        </div>
       </div>
     </header>
   )
