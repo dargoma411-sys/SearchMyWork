@@ -408,9 +408,7 @@ body {
 
 .theme-toggle:hover svg { transform: rotate(20deg); }
 
-/* В тёмной теме показываем луну */
 [data-theme="dark"] .theme-toggle .icon-sun { display: none; }
-/* В светлой теме показываем солнце */
 [data-theme="light"] .theme-toggle .icon-moon { display: none; }
 
 /* ============ CHAT ============ */
@@ -542,6 +540,57 @@ body {
 .chat-input-row .btn-primary { width: auto; margin: 0; padding: 12px 24px; }
 .chat-hint { padding: 0 16px 12px; font-size: 12px; color: var(--muted); }
 .chat-empty { text-align: center; color: var(--muted); padding: 40px 20px; font-size: 14px; }
+
+/* ============ PROFILE VIEW ============ */
+.profile-view.hidden,
+.profile-edit.hidden {
+  display: none;
+}
+
+.pv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+}
+
+.pv-row:last-child { border-bottom: none; }
+
+.pv-label {
+  color: var(--muted);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.pv-value {
+  color: var(--text);
+  text-align: right;
+  word-break: break-word;
+  flex: 1;
+}
+
+.pv-row .pv-change {
+  flex-shrink: 0;
+  margin-left: 16px;
+  padding: 6px 12px;
+  font-size: 13px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pv-row .pv-change:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+}
+
+#profile-view #profile-edit-btn { margin-top: 24px; }
 
 /* ============ FOOTER ============ */
 .footer {
