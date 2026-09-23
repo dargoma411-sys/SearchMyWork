@@ -114,45 +114,45 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============ FILTERS ============ */
-.filters-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+/* ============ SEARCH BAR ============ */
+.search-bar {
+  position: relative;
   margin-bottom: 32px;
-  padding: 20px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-bar .search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 20px 16px 52px;
+  border: 1px solid var(--border);
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
-
-.filter-input, .filter-select {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  background: var(--bg);
   color: var(--text);
-  border-radius: 10px;
-  font-size: 14px;
-  transition: border-color 0.2s;
+  border-radius: 16px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.2s;
 }
 
-.filter-input:focus, .filter-select:focus { outline: none; border-color: var(--accent); }
-.filter-input.small { max-width: 140px; }
-.filter-input.wide { flex: 1; max-width: 400px; }
-
-.profiles-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  gap: 16px;
-  flex-wrap: wrap;
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
-.profiles-header h2 {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 28px;
-}
+.search-input::placeholder { color: var(--muted); }
 
 /* ============ CARDS ============ */
 .cards-grid {
@@ -198,7 +198,6 @@ body {
 }
 
 .card-company { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
-
 .card-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 
 .badge {
@@ -275,11 +274,7 @@ body {
   margin-bottom: 8px;
 }
 
-.form-subtitle {
-  color: var(--muted);
-  font-size: 15px;
-  margin-bottom: 24px;
-}
+.form-subtitle { color: var(--muted); font-size: 15px; margin-bottom: 24px; }
 
 .account-type-switch {
   display: flex;
@@ -306,7 +301,6 @@ body {
 
 .type-btn:hover { color: var(--text); }
 .type-btn.active { background: var(--gradient); color: white; }
-
 .type-fields.hidden { display: none; }
 
 .form-card label {
@@ -399,7 +393,7 @@ body {
 .contact-info a { color: var(--accent); text-decoration: none; font-weight: 500; }
 .contact-info a:hover { text-decoration: underline; }
 
-.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); grid-column: 1 / -1; }
 .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
 
 /* ============ THEME TOGGLE ICON ============ */
@@ -409,10 +403,15 @@ body {
   display: block;
   stroke: var(--text);
   fill: none;
+  transition: transform 0.3s;
 }
 
+.theme-toggle:hover svg { transform: rotate(20deg); }
+
+/* В тёмной теме показываем луну */
+[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+/* В светлой теме показываем солнце */
 [data-theme="light"] .theme-toggle .icon-moon { display: none; }
-[data-theme="dark"]  .theme-toggle .icon-sun  { display: none; }
 
 /* ============ CHAT ============ */
 .chat-layout {
@@ -441,21 +440,6 @@ body {
 }
 
 .chat-sidebar h3 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; }
-
-.chat-new-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface-hover);
-  color: var(--text);
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.chat-new-btn:hover { background: var(--gradient); color: white; border-color: transparent; }
 
 .chat-dialog-item {
   padding: 10px 12px;
@@ -486,22 +470,6 @@ body {
 
 .chat-dialog-item:hover .del { opacity: 1; }
 .chat-dialog-item .del:hover { color: #ef4444; }
-
-.chat-new-list { margin-top: 8px; padding-top: 12px; border-top: 1px dashed var(--border); }
-.chat-new-list.hidden { display: none; }
-.chat-new-list h4 { font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
-
-.chat-new-item {
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 4px;
-  border: 1px solid transparent;
-}
-
-.chat-new-item:hover { background: var(--surface-hover); color: var(--text); border-color: var(--accent); }
 
 .chat-main {
   background: var(--surface);
@@ -613,7 +581,6 @@ body {
 @media (max-width: 768px) {
   .header-inner { flex-direction: column; gap: 16px; }
   .nav { justify-content: center; }
-  .filters-bar { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: 1fr; }
   .form-card { padding: 24px 20px; }
   #job-detail-content, #profile-detail-content { padding: 24px 20px; }
