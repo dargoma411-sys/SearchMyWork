@@ -1,19 +1,22 @@
 import './globals.css'
+import { AppProvider } from '@/lib/context'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export const metadata = {
-  title: 'SearchMyWork - Вакансии и предложения о работе',
+  title: 'SearchMyWork — Вакансии и соискатели',
   description: 'Платформа для поиска работы и размещения вакансий',
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <AppProvider>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </AppProvider>
       </body>
     </html>
   )
