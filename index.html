@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SearchMyWork — биржа вакансий</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -17,10 +18,10 @@
     <h1 class="logo">Search<span>MyWork</span></h1>
     
     <nav class="nav">
-      <button class="nav-btn active" data-page="jobs">Вакансии</button>
-      <button class="nav-btn" data-page="profiles">Специалисты</button>
-      <button class="nav-btn" data-page="create-profile">Анкета</button>
-      <button class="nav-btn" data-page="chat">Чат</button>
+      <button class="nav-btn active" data-page="jobs" data-i18n="nav_jobs">Вакансии</button>
+      <button class="nav-btn" data-page="profiles" data-i18n="nav_profiles">Специалисты</button>
+      <button class="nav-btn" data-page="create-profile" data-i18n="nav_profile">Анкета</button>
+      <button class="nav-btn" data-page="chat" data-i18n="nav_chat">Чат</button>
     </nav>
     
     <div class="controls">
@@ -38,28 +39,28 @@
   <!-- Страница поиска вакансий -->
   <section id="page-jobs" class="page active">
     <div class="filters-bar">
-      <input type="text" id="search-input" placeholder="Поиск по названию..." class="filter-input">
+      <input type="text" id="search-input" class="filter-input" data-i18n-placeholder="search_placeholder">
       <select id="category-filter" class="filter-select">
-        <option value="">Все категории</option>
-        <option value="it">IT / Разработка</option>
-        <option value="design">Дизайн</option>
-        <option value="marketing">Маркетинг</option>
-        <option value="sales">Продажи</option>
-        <option value="finance">Финансы</option>
+        <option value="" data-i18n="all_categories">Все категории</option>
+        <option value="it" data-i18n="cat_it">IT / Разработка</option>
+        <option value="design" data-i18n="cat_design">Дизайн</option>
+        <option value="marketing" data-i18n="cat_marketing">Маркетинг</option>
+        <option value="sales" data-i18n="cat_sales">Продажи</option>
+        <option value="finance" data-i18n="cat_finance">Финансы</option>
       </select>
-      <input type="text" id="location-filter" placeholder="Локация" class="filter-input">
+      <input type="text" id="location-filter" class="filter-input" data-i18n-placeholder="location">
       <select id="employment-type" class="filter-select">
-        <option value="">Тип занятости</option>
-        <option value="fulltime">Полная занятость</option>
-        <option value="parttime">Частичная</option>
-        <option value="remote">Удалённо</option>
-        <option value="contract">Контракт</option>
+        <option value="" data-i18n="employment_type">Тип занятости</option>
+        <option value="fulltime" data-i18n="emp_fulltime">Полная занятость</option>
+        <option value="parttime" data-i18n="emp_parttime">Частичная</option>
+        <option value="remote" data-i18n="emp_remote">Удалённо</option>
+        <option value="contract" data-i18n="emp_contract">Контракт</option>
       </select>
-      <input type="number" id="salary-min" placeholder="Зарплата от" class="filter-input small">
+      <input type="number" id="salary-min" class="filter-input small" data-i18n-placeholder="salary_from">
       <select id="sort-by" class="filter-select">
-        <option value="newest">Сначала новые</option>
-        <option value="salary-desc">Зарплата ↓</option>
-        <option value="salary-asc">Зарплата ↑</option>
+        <option value="newest" data-i18n="newest">Сначала новые</option>
+        <option value="salary-desc" data-i18n="salary_desc">Зарплата ↓</option>
+        <option value="salary-asc" data-i18n="salary_asc">Зарплата ↑</option>
       </select>
     </div>
     
@@ -69,54 +70,70 @@
   <!-- Список профилей специалистов -->
   <section id="page-profiles" class="page">
     <div class="profiles-header">
-      <h2>Специалисты</h2>
-      <input type="text" id="profile-search" placeholder="Поиск по имени или навыкам..." class="filter-input wide">
+      <h2 data-i18n="specialists_title">Специалисты</h2>
+      <input type="text" id="profile-search" class="filter-input wide" data-i18n-placeholder="profile_search">
     </div>
     <div id="profiles-list" class="cards-grid"></div>
   </section>
 
-  <!-- Создание профиля (Анкета) -->
+  <!-- Анкета -->
   <section id="page-create-profile" class="page">
-    <form id="profile-form" class="form-card">
-      <h2>Расскажите о себе</h2>
-      
-      <label>Имя и фамилия *<input type="text" name="name" required></label>
-      
-      <label>Желаемая должность *<input type="text" name="desired_position" required></label>
-      
-      <label>Город *<input type="text" name="city" required></label>
-      
-      <label>Опыт работы (лет)<input type="number" name="experience_years" min="0"></label>
-      
-      <label>Ожидаемая зарплата<input type="number" name="expected_salary" placeholder="80000"></label>
-      
-      <label>Навыки (через запятую) *<input type="text" name="skills" required placeholder="JavaScript, React, Node.js"></label>
-      
-      <label>О себе *<textarea name="about" rows="6" required></textarea></label>
-      
-      <label>Portfolio / LinkedIn / GitHub<input type="url" name="portfolio_url"></label>
-      
-      <label>Email *<input type="email" name="email" required></label>
-      
-      <label>Телефон<input type="tel" name="phone"></label>
-      
-      <button type="submit" class="btn-primary">Сохранить анкету</button>
-    </form>
+    <div class="form-card">
+      <h2 data-i18n="profile_form_title">Заполните анкету</h2>
+      <p class="form-subtitle" data-i18n="profile_form_subtitle">Чтобы компания или специалист знали, кто вы.</p>
+
+      <div class="account-type-switch">
+        <button type="button" class="type-btn active" data-type="specialist" data-i18n="type_specialist">Я специалист</button>
+        <button type="button" class="type-btn" data-type="company" data-i18n="type_company">Я компания</button>
+      </div>
+
+      <form id="profile-form">
+        <!-- Общие поля -->
+        <label><span data-i18n="f_name">Имя и фамилия *</span><input type="text" name="name" required></label>
+        <label><span data-i18n="f_city">Город *</span><input type="text" name="city" required></label>
+        <label><span data-i18n="f_email">Email *</span><input type="email" name="email" required></label>
+        <label><span data-i18n="f_phone">Телефон</span><input type="tel" name="phone"></label>
+
+        <!-- Поля специалиста -->
+        <div class="type-fields" data-type-fields="specialist">
+          <label><span data-i18n="f_position">Желаемая должность *</span><input type="text" name="desired_position"></label>
+          <label><span data-i18n="f_exp">Опыт работы (лет)</span><input type="number" name="experience_years" min="0"></label>
+          <label><span data-i18n="f_salary">Ожидаемая зарплата</span><input type="number" name="expected_salary" placeholder="80000"></label>
+          <label><span data-i18n="f_skills">Навыки (через запятую) *</span><input type="text" name="skills" placeholder="JavaScript, React, Node.js"></label>
+          <label><span data-i18n="f_about">О себе *</span><textarea name="about" rows="5"></textarea></label>
+          <label><span data-i18n="f_portfolio">Portfolio / LinkedIn / GitHub</span><input type="url" name="portfolio_url"></label>
+        </div>
+
+        <!-- Поля компании -->
+        <div class="type-fields hidden" data-type-fields="company">
+          <label><span data-i18n="f_company_name">Название компании *</span><input type="text" name="company_name"></label>
+          <label><span data-i18n="f_industry">Сфера деятельности *</span><input type="text" name="industry" placeholder="IT, Финансы, Ритейл..."></label>
+          <label><span data-i18n="f_website">Сайт компании</span><input type="url" name="website"></label>
+          <label><span data-i18n="f_company_about">О компании *</span><textarea name="company_about" rows="5"></textarea></label>
+        </div>
+
+        <button type="submit" class="btn-primary" data-i18n="save_profile">Сохранить анкету</button>
+      </form>
+    </div>
   </section>
 
   <!-- Чат -->
   <section id="page-chat" class="page">
     <div class="chat-layout">
       <aside class="chat-sidebar">
-        <h3>Вакансии</h3>
-        <div id="chat-job-list"></div>
+        <div class="chat-sidebar-head">
+          <h3 data-i18n="chat_dialogs">Диалоги</h3>
+          <button id="chat-new-btn" class="chat-new-btn" title="Новый чат">+</button>
+        </div>
+        <div id="chat-dialog-list"></div>
+        <div id="chat-new-list" class="chat-new-list hidden"></div>
       </aside>
       <div class="chat-main">
-        <div id="chat-header" class="chat-header">Выберите вакансию</div>
+        <div id="chat-header" class="chat-header" data-i18n="chat_choose">Выберите диалог</div>
         <div id="chat-messages" class="chat-messages"></div>
         <div class="chat-input-row">
-          <input type="text" id="chat-input" placeholder="Написать сообщение..." disabled>
-          <button id="chat-send" class="btn-primary" disabled>Отправить</button>
+          <input type="text" id="chat-input" data-i18n-placeholder="chat_placeholder" disabled>
+          <button id="chat-send" class="btn-primary" disabled data-i18n="send">Отправить</button>
         </div>
         <div id="chat-hint" class="chat-hint"></div>
       </div>
@@ -125,13 +142,13 @@
 
   <!-- Детали вакансии -->
   <section id="page-job-detail" class="page">
-    <button id="back-to-jobs" class="btn-secondary">← Назад к списку</button>
+    <button id="back-to-jobs" class="btn-secondary" data-i18n="back_to_list">← Назад к списку</button>
     <div id="job-detail-content"></div>
   </section>
 
   <!-- Детали профиля -->
   <section id="page-profile-detail" class="page">
-    <button id="back-to-profiles" class="btn-secondary">← Назад к специалистам</button>
+    <button id="back-to-profiles" class="btn-secondary" data-i18n="back_to_specialists">← Назад к специалистам</button>
     <div id="profile-detail-content"></div>
   </section>
 
@@ -142,21 +159,21 @@
   <div class="container footer-inner">
     <div class="footer-col">
       <h4>SearchMyWork</h4>
-      <p>Биржа вакансий и специалистов</p>
+      <p data-i18n="footer_tag">Биржа вакансий и специалистов</p>
     </div>
     <div class="footer-col">
-      <h4>Контакты</h4>
+      <h4 data-i18n="footer_contacts">Контакты</h4>
       <p><a href="mailto:Work@Morvexx.ru">Work@Morvexx.ru</a></p>
       <p><a href="tel:+79999999999">+7 999 999 99 99</a></p>
     </div>
     <div class="footer-col">
-      <h4>Документы</h4>
-      <p><a href="#" onclick="return false;">Политика конфиденциальности</a></p>
-      <p><a href="#" onclick="return false;">Пользовательское соглашение</a></p>
+      <h4 data-i18n="footer_docs">Документы</h4>
+      <p><a href="#" onclick="return false;" data-i18n="footer_privacy">Политика конфиденциальности</a></p>
+      <p><a href="#" onclick="return false;" data-i18n="footer_terms">Пользовательское соглашение</a></p>
     </div>
   </div>
   <div class="footer-bottom container">
-    <span>© <span id="footer-year"></span> SearchMyWork. Все права защищены.</span>
+    <span>© <span id="footer-year"></span> SearchMyWork. <span data-i18n="footer_rights">Все права защищены.</span></span>
   </div>
 </footer>
 
