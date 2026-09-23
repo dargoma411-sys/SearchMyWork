@@ -877,13 +877,8 @@ function renderProfileView() {
     <div class="pv-row">
       <span class="pv-label">${escapeHtml(f.label)}</span>
       <span class="pv-value">${escapeHtml(f.value)}</span>
-      <button type="button" class="pv-change">${t.edit}</button>
     </div>
   `).join('');
-
-  container.querySelectorAll('.pv-change').forEach(btn => {
-    btn.addEventListener('click', openProfileEdit);
-  });
 
   const editBtn = document.getElementById('profile-edit-btn');
   if (editBtn) editBtn.textContent = t.edit_profile;
