@@ -18,9 +18,9 @@
     
     <nav class="nav">
       <button class="nav-btn active" data-page="jobs">Вакансии</button>
-      <button class="nav-btn" data-page="post-job">Разместить вакансию</button>
       <button class="nav-btn" data-page="profiles">Специалисты</button>
-      <button class="nav-btn" data-page="create-profile">О себе</button>
+      <button class="nav-btn" data-page="create-profile">Анкета</button>
+      <button class="nav-btn" data-page="chat">Чат</button>
     </nav>
     
     <div class="controls">
@@ -28,7 +28,7 @@
         <option value="ru">RU</option>
         <option value="en">EN</option>
       </select>
-      <button id="theme-toggle" class="theme-toggle">🌓</button>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Сменить тему"></button>
     </div>
   </div>
 </header>
@@ -66,57 +66,6 @@
     <div id="jobs-list" class="cards-grid"></div>
   </section>
 
-  <!-- Форма размещения вакансии -->
-  <section id="page-post-job" class="page">
-    <form id="job-form" class="form-card">
-      <h2>Новая вакансия</h2>
-      
-      <label>Название должности *<input type="text" name="title" required></label>
-      
-      <label>Компания *<input type="text" name="company" required></label>
-      
-      <label>Категория *
-        <select name="category" required>
-          <option value="">Выберите...</option>
-          <option value="it">IT / Разработка</option>
-          <option value="design">Дизайн</option>
-          <option value="marketing">Маркетинг</option>
-          <option value="sales">Продажи</option>
-          <option value="finance">Финансы</option>
-        </select>
-      </label>
-      
-      <label>Локация *<input type="text" name="location" required placeholder="Москва / Удалённо"></label>
-      
-      <label>Тип занятости *
-        <select name="employment_type" required>
-          <option value="">Выберите...</option>
-          <option value="fulltime">Полная занятость</option>
-          <option value="parttime">Частичная</option>
-          <option value="remote">Удалённо</option>
-          <option value="contract">Контракт</option>
-        </select>
-      </label>
-      
-      <div class="row">
-        <label>Зарплата от<input type="number" name="salary_min" placeholder="50000"></label>
-        <label>Зарплата до<input type="number" name="salary_max" placeholder="120000"></label>
-      </div>
-      
-      <label>Описание *<textarea name="description" rows="6" required></textarea></label>
-      
-      <label>Требования<textarea name="requirements" rows="4"></textarea></label>
-      
-      <label>Условия работы<textarea name="benefits" rows="4"></textarea></label>
-      
-      <label>Email для связи *<input type="email" name="contact_email" required></label>
-      
-      <label>Телефон<input type="tel" name="contact_phone"></label>
-      
-      <button type="submit" class="btn-primary">Опубликовать вакансию</button>
-    </form>
-  </section>
-
   <!-- Список профилей специалистов -->
   <section id="page-profiles" class="page">
     <div class="profiles-header">
@@ -126,7 +75,7 @@
     <div id="profiles-list" class="cards-grid"></div>
   </section>
 
-  <!-- Создание профиля -->
+  <!-- Создание профиля (Анкета) -->
   <section id="page-create-profile" class="page">
     <form id="profile-form" class="form-card">
       <h2>Расскажите о себе</h2>
@@ -151,8 +100,27 @@
       
       <label>Телефон<input type="tel" name="phone"></label>
       
-      <button type="submit" class="btn-primary">Создать профиль</button>
+      <button type="submit" class="btn-primary">Сохранить анкету</button>
     </form>
+  </section>
+
+  <!-- Чат -->
+  <section id="page-chat" class="page">
+    <div class="chat-layout">
+      <aside class="chat-sidebar">
+        <h3>Вакансии</h3>
+        <div id="chat-job-list"></div>
+      </aside>
+      <div class="chat-main">
+        <div id="chat-header" class="chat-header">Выберите вакансию</div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Написать сообщение..." disabled>
+          <button id="chat-send" class="btn-primary" disabled>Отправить</button>
+        </div>
+        <div id="chat-hint" class="chat-hint"></div>
+      </div>
+    </div>
   </section>
 
   <!-- Детали вакансии -->
@@ -168,6 +136,29 @@
   </section>
 
 </main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <h4>SearchMyWork</h4>
+      <p>Биржа вакансий и специалистов</p>
+    </div>
+    <div class="footer-col">
+      <h4>Контакты</h4>
+      <p><a href="mailto:Work@Morvexx.ru">Work@Morvexx.ru</a></p>
+      <p><a href="tel:+79999999999">+7 999 999 99 99</a></p>
+    </div>
+    <div class="footer-col">
+      <h4>Документы</h4>
+      <p><a href="#" onclick="return false;">Политика конфиденциальности</a></p>
+      <p><a href="#" onclick="return false;">Пользовательское соглашение</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom container">
+    <span>© <span id="footer-year"></span> SearchMyWork. Все права защищены.</span>
+  </div>
+</footer>
 
 <script src="app.js"></script>
 </body>
